@@ -3,8 +3,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Clone le dépôt GitHub
-                git 'https://github.com/cbeuchatmmi/mon_app'
+                // Clone le dépôt GitHub avec credentials
+                git credentialsId: 'votre-credential-id', url: 'https://github.com/cbeuchatmmi/mon_app'
             }
         }
         stage('Build Docker Image') {
