@@ -3,7 +3,8 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/cbeuchatmmi/mon_app.git'
+                // Cloner la branche main du dépôt public
+                git url: 'https://github.com/cbeuchatmmi/mon_app.git', branch: 'main'
             }
         }
         stage('Install Dependencies') {
