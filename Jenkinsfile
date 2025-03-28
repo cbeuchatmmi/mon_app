@@ -1,21 +1,14 @@
 pipeline {
     agent any
-
-    environment {
-        IMAGE_NAME = "mon-app-image"
-        CONTAINER_NAME = "mon-app-container"
-    }
-
     stages {
         stage('Cloner le dépôt Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/cbeuchatmmi/mon_app'
+                git branch: 'main', url: 'https://github.com/cbeuchatmmi/mon_app.git'
             }
         }
 
         stage('Installer les dépendances et exécuter les tests') {
             steps {
-                echo "Installation des dépendances et tests unitaires..."
                 sh 'npm install'
                 sh 'npm test'
             }
@@ -23,31 +16,14 @@ pipeline {
 
         stage('Construire l\'image Docker') {
             steps {
-                script {
-                    echo "Construction de l'image Docker..."
-                    sh 'docker build -t ${IMAGE_NAME} .'
-                }
+                sh 'docker build -t mon_app .'
             }
         }
 
         stage('Déployer sur le serveur de test') {
             steps {
-                script {
-                    echo "Déploiement de l'application sur le serveur de test..."
-                    sh 'docker stop ${CONTAINER_NAME} || true'
-                    sh 'docker rm ${CONTAINER_NAME} || true'
-                    sh 'docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${IMAGE_NAME}'
-                }
+                sh 'docker run -d -p 3000:3000 mon_app'
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Pipeline exécuté avec succès !"
-        }
-        failure {
-            echo "❌ Échec du pipeline"
         }
     }
 }
