@@ -3,20 +3,25 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Cloner la branche main du dépôt public
-                git url: 'https://github.com/cbeuchatmmi/mon_app.git', branch: 'main'
+                git 'https://github.com/cbeuchatmmi/mon_app.git'
             }
         }
         stage('Install Dependencies') {
             steps {
-                // Installer les dépendances Python
-                sh 'pip install -r requirements.txt'
+                script {
+                    // Créer un environnement virtuel
+                    sh 'python3 -m venv venv'
+                    // Activer l'environnement virtuel et installer les dépendances
+                    sh '. venv/bin/activate && pip install -r requirements.txt'
+                }
             }
         }
         stage('Run Tests') {
             steps {
-                // Lancer les tests
-                sh 'python -m unittest discover -s tests'
+                script {
+                    // Exécuter les tests
+                    sh '. venv/bin/activate && python -m unittest discover -s tests'
+                }
             }
         }
     }
