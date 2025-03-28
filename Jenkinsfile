@@ -1,37 +1,35 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'ton_dockerhub_username/ton_image'  // Remplace par ton nom d'utilisateur Docker Hub et le nom de ton image
-        DOCKER_HUB_CREDENTIALS = 'docker_hub_credentials' // Remplace par le nom de tes identifiants Docker Hub dans Jenkins
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
+                // Cloner la branche main du dépôt public
                 git url: 'https://github.com/cbeuchatmmi/mon_app.git', branch: 'main'
             }
         }
-
-        stage('Build Docker Image') {
+        stage('Check Python Version') {
             steps {
                 script {
-                    // Construire l'image Docker
-                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                    // Vérifier que python3 et pip3 sont disponibles dans le PATH
+                    sh 'python3 --version'
+                    sh 'pip3 --version'
                 }
             }
         }
-
-        stage('Push Docker Image') {
+        stage('Install Dependencies') {
             steps {
                 script {
-                    // Se connecter à Docker Hub et pousser l'image
-                    withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh """
-                        echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-                        docker push ${DOCKER_IMAGE}
-                        """
-                    }
+                    // Installer les dépendances dans l'environnement global
+                    sh 'pip3 install --break-system-packages -r requirements.txt'
+                }
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Exécuter les tests avec python3
+                    sh 'python3 -m unittest discover -s tests'
                 }
             }
         }
