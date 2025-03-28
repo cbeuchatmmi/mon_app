@@ -10,7 +10,7 @@ pipeline {
         stage('Cloner le dépôt Git') {
             steps {
                 echo "🚀 Clonage du dépôt Git..."
-                git url: 'https://github.com/cbeuchatmmi/mon-app.git', branch: 'main'
+                git url: ' https://github.com/cbeuchatmmi/mon_app.git', branch: 'main'
             }
         }
 
