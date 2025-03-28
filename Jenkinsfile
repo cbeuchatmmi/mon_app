@@ -1,31 +1,54 @@
 pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = "mon-app-image"
+        CONTAINER_NAME = "mon-app-container"
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Cloner le dépôt Git') {
             steps {
-                // Clone le dépôt GitHub avec credentials
-                git credentialsId: 'votre-credential-id', url: 'https://github.com/cbeuchatmmi/mon_app'
+                echo "🚀 Clonage du dépôt Git..."
+                git url: 'https://github.com/cbeuchatmmi/mon-app.git', branch: 'main'
             }
         }
-        stage('Build Docker Image') {
+
+        stage('Installer les dépendances et exécuter les tests') {
             steps {
-                // Construire l'image Docker
+                echo "Installation des dépendances et tests unitaires..."
+                sh 'npm install'
+                sh 'npm test'
+            }
+        }
+
+        stage('Construire l\'image Docker') {
+            steps {
                 script {
-                    docker.build('mon_app:latest')
+                    echo "Construction de l'image Docker..."
+                    sh 'docker build -t ${IMAGE_NAME} .'
                 }
             }
         }
-        stage('Run Tests') {
+
+        stage('Déployer sur le serveur de test') {
             steps {
-                // Exemple de tests (vous pouvez personnaliser cette étape)
-                sh 'echo "No tests defined"'
+                script {
+                    echo "Déploiement de l'application sur le serveur de test..."
+                    sh 'docker stop ${CONTAINER_NAME} || true'
+                    sh 'docker rm ${CONTAINER_NAME} || true'
+                    sh 'docker run -d --name ${CONTAINER_NAME} -p 3000:3000 ${IMAGE_NAME}'
+                }
             }
         }
-        stage('Deploy') {
-            steps {
-                // Déployer ou exécuter le conteneur Docker
-                sh 'docker run -d -p 3000:3000 mon_app:latest'
-            }
+    }
+
+    post {
+        success {
+            echo "✅ Pipeline exécuté avec succès !"
+        }
+        failure {
+            echo "❌ Échec du pipeline"
         }
     }
 }
