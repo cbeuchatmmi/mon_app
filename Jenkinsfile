@@ -1,11 +1,29 @@
 pipeline {
     agent any
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Install dependencies') {
             steps {
                 script {
-                    sh 'pwd'  // Affiche le répertoire actuel
-                    sh 'ls -l'  // Liste les fichiers et répertoires du répertoire courant
+                    sh 'npm install'
+                }
+            }
+        }
+        stage('Run tests') {
+            steps {
+                script {
+                    sh 'npm test'
+                }
+            }
+        }
+        stage('Build Docker image') {
+            steps {
+                script {
+                    sh 'docker build -t mon_app .'
                 }
             }
         }
