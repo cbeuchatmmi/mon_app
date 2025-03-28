@@ -1,16 +1,11 @@
-# Utiliser une image Python officielle
-FROM python:3.9-slim
+# Utiliser l'image Jenkins officielle
+FROM jenkins/jenkins:lts
 
-# Définir le répertoire de travail
-WORKDIR /app
+# Passer à l'utilisateur root pour installer Python
+USER root
 
-# Copier les fichiers nécessaires
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
+# Installer Python 3 et pip
+RUN apt-get update && apt-get install -y python3 python3-pip
 
-# Exposer le port utilisé par l’application
-EXPOSE 3000
-
-# Commande pour lancer le serveur
-CMD ["python", "app.py"]
+# Revenir à l'utilisateur jenkins pour les raisons de sécurité
+USER jenkins
