@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     stages {
         stage('Clone Repository') {
             steps {
@@ -10,7 +11,7 @@ pipeline {
         stage('Check Python Version') {
             steps {
                 script {
-                    // Vérifier que python3 est disponible dans le PATH
+                    // Vérifier que python3 et pip3 sont disponibles dans le PATH
                     sh 'python3 --version'
                     sh 'pip3 --version'
                 }
@@ -19,7 +20,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Installer les dépendances
+                    // Installer les dépendances dans l'environnement global
                     sh 'pip3 install --break-system-packages -r requirements.txt'
                 }
             }
