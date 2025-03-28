@@ -1,9 +1,11 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
+        stage('Install Node.js and npm') {
             steps {
-                checkout scm
+                script {
+                    sh 'apt-get update && apt-get install -y nodejs npm'
+                }
             }
         }
         stage('Install dependencies') {
@@ -17,13 +19,6 @@ pipeline {
             steps {
                 script {
                     sh 'npm test'
-                }
-            }
-        }
-        stage('Build Docker image') {
-            steps {
-                script {
-                    sh 'docker build -t mon_app .'
                 }
             }
         }
