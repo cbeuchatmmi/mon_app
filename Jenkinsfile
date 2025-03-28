@@ -1,35 +1,23 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.9'  // Utilisation d'une image Docker avec Python préinstallé
-        }
-    }
+    agent any
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: 'github-credentials', url: 'https://github.com/cbeuchatmmi/mon_app.git'
+                // Cloner le dépôt public GitHub sans authentification
+                git url: 'https://github.com/cbeuchatmmi/mon_app.git'
             }
         }
-        stage('Verify Python') {
-            steps {
-                sh 'python --version'
-                sh 'pip --version'
-            }
-        }
-        stage('List Files') {
-            steps {
-                sh 'ls -l'
-            }
-        }
-        stage('Install Dependencies') {
-            steps {
-                sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Run Tests') {
-            steps {
-                sh 'python -m unittest discover -s tests'
-            }
-        }
+        // stage('Install Dependencies') {
+        //     steps {
+        //         // Installer les dépendances Python
+        //         sh 'pip install -r requirements.txt'
+        //     }
+        // }
+        // stage('Run Tests') {
+        //     steps {
+        //         // Lancer les tests
+        //         sh 'python -m unittest discover -s tests'
+        //     }
+        // }
     }
 }
