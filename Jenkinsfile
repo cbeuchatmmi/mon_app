@@ -1,17 +1,22 @@
 pipeline {
     agent any
-    tools {
-        nodejs 'nodejs-16' // Prénom configuré dans Global Tool Configuration
-    }
     stages {
-        stage('Install dependencies') {
+        stage('Clone Repository') {
             steps {
-                sh 'npm install'
+                // Cloner le dépôt GitHub
+                git credentialsId: 'github-credentials', url: 'https://github.com/cbeuchatmmi/mon_app'
             }
         }
-        stage('Run tests') {
+        stage('Install Dependencies') {
             steps {
-                sh 'npm test'
+                // Installer les dépendances Python
+                sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                // Lancer les tests
+                sh 'python -m unittest discover -s tests'
             }
         }
     }
