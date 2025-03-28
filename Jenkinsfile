@@ -10,8 +10,14 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Installer les dépendances sans utiliser un environnement virtuel
-                    sh 'pip install -r requirements.txt'
+                    // S'assurer que pip est à jour avant l'installation
+                    sh 'python3 -m pip install --upgrade pip'
+                    // Créer un environnement virtuel et installer les dépendances
+                    sh 'python3 -m venv venv'
+                    sh ''' 
+                    source venv/bin/activate
+                    pip install -r requirements.txt
+                    '''
                 }
             }
         }
@@ -19,7 +25,10 @@ pipeline {
             steps {
                 script {
                     // Exécuter les tests
-                    sh 'python -m unittest discover -s tests'
+                    sh ''' 
+                    source venv/bin/activate
+                    python -m unittest discover -s tests
+                    '''
                 }
             }
         }
