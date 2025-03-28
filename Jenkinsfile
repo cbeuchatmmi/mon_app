@@ -3,21 +3,21 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Cloner le dépôt public GitHub sans authentification
-                git url: 'https://github.com/cbeuchatmmi/mon_app.git'
+                // Cloner la branche main du dépôt public
+                git url: 'https://github.com/cbeuchatmmi/mon_app.git', branch: 'main'
             }
         }
-        // stage('Install Dependencies') {
-        //     steps {
-        //         // Installer les dépendances Python
-        //         sh 'pip install -r requirements.txt'
-        //     }
-        // }
-        // stage('Run Tests') {
-        //     steps {
-        //         // Lancer les tests
-        //         sh 'python -m unittest discover -s tests'
-        //     }
-        // }
+        stage('Install Dependencies') {
+            steps {
+                // Installer les dépendances Python
+                sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                // Lancer les tests
+                sh 'python -m unittest discover -s tests'
+            }
+        }
     }
 }
