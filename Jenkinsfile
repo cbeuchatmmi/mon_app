@@ -2,10 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // Définir le nom de l'image Docker que tu souhaites construire
         IMAGE_NAME = "mon_app_image"
         DOCKER_TAG = "latest"
-        SERVER_TEST = "user@your-test-server:/path/to/deployment/directory"
+        SSH_SERVER = "user@test-server"
     }
 
     stages {
@@ -43,22 +42,25 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construire l'image Docker à partir du Dockerfile
-                    sh 'docker build -t ${IMAGE_NAME}:${DOCKER_TAG} .'
+                    // Ajouter le contexte de build
+                    docker.build("${IMAGE_NAME}:${DOCKER_TAG}")
                 }
             }
         }
+
         stage('Deploy to Test Server') {
             steps {
-                script {
-                    // Déployer l'image Docker sur un serveur de test
-                    // Ce déploiement dépend du type de déploiement que tu veux faire (par ex. docker run ou docker-compose)
-                    
-                    // Connecter le serveur via SSH et exécuter la commande de déploiement
-                    sh """
-                    ssh ${SERVER_TEST} 'docker pull ${IMAGE_NAME}:${DOCKER_TAG}'
-                    ssh ${SERVER_TEST} 'docker run -d --name mon_app_container ${IMAGE_NAME}:${DOCKER_TAG}'
-                    """
+                sshagent(['ssh-test-server']) {  // Utiliser les credentials SSH
+                    script {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ${SSH_SERVER} "
+                                docker stop mon_app_container || true
+                                docker rm mon_app_container || true
+                                docker pull ${IMAGE_NAME}:${DOCKER_TAG}
+                                docker run -d -p 80:5000 --name mon_app_container ${IMAGE_NAME}:${DOCKER_TAG}
+                            "
+                        """
+                    }
                 }
             }
         }
