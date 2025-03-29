@@ -42,8 +42,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Ajouter le contexte de build
-                    docker.build("${IMAGE_NAME}:${DOCKER_TAG}")
+                    // Ajouter le contexte de build avec le plugin Docker
+                    docker.build("${IMAGE_NAME}:${DOCKER_TAG}", "--no-cache .")
                 }
             }
         }
